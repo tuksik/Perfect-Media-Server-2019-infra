@@ -285,7 +285,6 @@ containers:
       - "{{ appdata_path_zfs }}/config:/config"
     ports:
       - "8126:8126"
-    include_global_env_vars: false
     restart: unless-stopped
   - service_name: grafana
     active: true
