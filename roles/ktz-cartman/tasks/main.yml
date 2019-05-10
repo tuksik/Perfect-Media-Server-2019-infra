@@ -1,0 +1,17 @@
+---
+
+- name: disks
+  include: disks.yml
+  tags:
+    - disks
+
+- name: file-sharing
+  include: file-sharing.yml
+  tags:
+    - file-sharing
+
+# perhaps a generic 'node' monitoring setup role?
+# - name: monitoring
+#   include: monitoring.yml
+#   tags:
+#     - monitoring

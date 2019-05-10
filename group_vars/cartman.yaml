@@ -1,0 +1,365 @@
+---
+
+target_os: ubuntu
+
+# ironicbadger.ansible_users
+users:
+  - username: "{{ main_username }}"
+    github_username: ironicbadger
+    name: "{{ main_username }}"
+    groups: ['wheel','docker']
+    uid: "{{ main_uid }}"
+  - username: cat
+    github_username: dropcat13
+    name: cat
+    groups: []
+    uid: 1098
+groups_to_create:
+  - name: "{{ main_groupname }}"
+    gid: "{{ main_gid }}"
+  - name: wheel
+  - name: docker
+
+# grog.package
+package_list:
+  - name: bash-completion
+  - name: curl
+  - name: git
+  - name: htop
+  - name: iftop
+  - name: iotop
+  - name: mc
+  - name: mergerfs
+  - name: mutt
+  - name: ncdu
+  - name: net-tools
+  - name: nmap
+  - name: openssh-server
+  - name: open-vm-tools
+  - name: python
+  - name: qemu-guest-agent
+  - name: screen
+  - name: smartmontools
+  - name: sudo
+  - name: tmux
+  - name: tree
+  - name: wget
+  - name: zfsutils-linux
+
+# ferrarimarco.bash-aliases
+bash_aliases:
+  - { alias: "dtail", command: "docker logs -tf --tail='50' "}
+  - { alias: "dstop", command: "docker stop `docker ps -aq`"}
+  - { alias: "drm", command: "docker rm `docker ps -aq`"}
+  - { alias: "dcp", command: "docker-compose -f ~/docker-compose.yml "}
+  - { alias: "dprune", command: "docker image prune"}
+  - { alias: "dprunesys", command: "docker system prune --all"}
+  - { alias: "bashreload", command: "source ~/.bashrc && echo Bash config reloaded;"}
+  - { alias: "ctop", command: "docker run --name ctop  -it --rm -v /var/run/docker.sock:/var/run/docker.sock quay.io/vektorlab/ctop "}
+  - { alias: "sshclear", command: "rm ~/.ssh/multiplex/* -f && echo SSH connection cache cleared;"}
+  - { alias: "sshlist", command: "echo Currently open ssh connections && echo && l ~/.ssh/multiplex/"}
+  - { alias: "appdata", command: "cd /mnt/tank/appdata"}
+  - { alias: "zsnap", command: "zfs list -t snapshot"}
+
+# ktz-cartman
+cartman_main_storage_path: /mnt/storage
+
+extra_mountpoints:
+  - { path: "{{ cartman_main_storage_path }}" }
+  - { path: /opt, diskbyid: /dev/disk/by-id/nvme-SAMSUNG_MZVKW512HMJP-000L7_S35BNX0K509438-part1, fs: ext4, opts: "defaults,discard"}
+
+parity_disks:
+  - { path: /mnt/parity1, diskbyid: /dev/disk/by-id/ata-WDC_WD100EMAZ-00WJTA0_16G0Z7RZ-part1, fs: xfs, opts: defaults }
+  - { path: /mnt/parity2, diskbyid: /dev/disk/by-id/ata-WDC_WD100EMAZ-00WJTA0_16G1016Z-part1, fs: xfs, opts: defaults }
+
+data_disks:
+  - { path: /mnt/disk1, diskbyid: /dev/disk/by-id/ata-WDC_WD100EMAZ-00WJTA0_16G10VZZ-part1, fs: xfs, opts: defaults, content: true }
+  - { path: /mnt/disk2, diskbyid: /dev/disk/by-id/ata-WDC_WD100EMAZ-00WJTA0_2YHV69AD-part1, fs: xfs, opts: defaults, content: true }
+  - { path: /mnt/disk3, diskbyid: /dev/disk/by-id/ata-WDC_WD100EMAZ-00WJTA0_2YJ15VJD-part1, fs: xfs, opts: defaults, content: true }
+  - { path: /mnt/disk4, diskbyid: /dev/disk/by-id/ata-WDC_WD100EMAZ-00WJTA0_2YJ2S3AD-part1, fs: xfs, opts: defaults, content: false }
+  - { path: /mnt/disk5, diskbyid: /dev/disk/by-id/ata-HGST_HDN728080ALE604_R6GPPDTY-part1, fs: xfs, opts: defaults, content: false }
+  - { path: /mnt/disk6, diskbyid: /dev/disk/by-id/ata-WDC_WD80EZAZ-11TDBA0_7SJ1EJAW-part1, fs: xfs, opts: defaults, content: false }
+  - { path: /mnt/disk7, diskbyid: /dev/disk/by-id/ata-WDC_WD80EZAZ-11TDBA0_7SJ3JB4W-part1, fs: xfs, opts: defaults, content: false }
+  - { path: /mnt/disk8, diskbyid: /dev/disk/by-id/ata-ST8000DM004-2CX188_WCT0N54S-part1, fs: xfs, opts: defaults, content: false }
+  - { path: /mnt/disk9, diskbyid: /dev/disk/by-id/ata-ST8000DM004-2CX188_WCT0NN0R-part1, fs: xfs, opts: defaults, content: false }
+
+zfs_disks:
+  #- { path: /mnt/disk5, diskbyid: /dev/disk/by-id/ata-WDC_WD100EMAZ-00WJTA0_2YJ373DD-part1, fs: xfs, opts: defaults, content: false }
+  #- { path: /mnt/disk6, diskbyid: /dev/disk/by-id/ata-WDC_WD100EMAZ-00WJTA0_2YJ7E2VD-part1, fs: xfs, opts: defaults, content: false }
+
+fstab_mergerfs:
+  - { source: "/mnt/disk*:/mnt/tank/fuse", mountpoint: "{{ cartman_main_storage_path }}", fs: fuse.mergerfs, opts: "defaults,allow_other,direct_io,use_ino,hard_remove,minfreespace=250G,fsname=mergerfs" }
+
+snapraid_email_address: alexktz@gmail.com
+snapraid_gmail_pass: "{{ gmail_password }}"
+snapraid_healthcheck_io_uuid: "{{ snapraid_healthcheck_secret }}"
+
+# ironicbadger.docker_compose_generator
+appdata_path_opt: /opt/appdata
+appdata_path_zfs: /mnt/tank/appdata
+appdata_path: "{{ appdata_path_zfs }}" #for nginx_configs role
+download_path: /opt/downloads
+containers:
+  - service_name: le
+    active: true
+    nginx_configs_rp_enabled: false
+    nginx_configs_rp_type: ""
+    image: linuxserver/letsencrypt
+    container_name: le
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - "{{ appdata_path_zfs }}/letsencrypt/config:/config"
+    restart: always
+    depends_on:
+      - heimdall
+      - nzbget
+      - sonarr
+      - radarr
+      - lidarr
+      - smokeping
+      - booksonic
+      - grafana
+    include_global_env_vars: true
+    environment:
+      - EMAIL=alexktz@gmail.com
+      - URL=ktz.me
+      - SUBDOMAINS=al,dash,hass
+      - ONLY_SUBDOMAINS=true
+      - EXTRA_DOMAINS=nc.ktz.cloud
+      - DHLEVEL=4096
+      - VALIDATION=http
+    mem_limit: 256m
+  - service_name: heimdall
+    active: true
+    nginx_configs_rp_enabled: true
+    nginx_configs_rp_type: subdom
+    image: linuxserver/heimdall
+    container_name: heimdall
+    mem_limit: 256m
+    include_global_env_vars: true
+    volumes:
+      - "{{ appdata_path_zfs }}/heimdall:/config"
+    restart: unless-stopped
+  - service_name: plex
+    active: true
+    nginx_configs_rp_enabled: false
+    nginx_configs_rp_type: ""
+    image: plexinc/pms-docker
+    container_name: plex
+    network_mode: host
+    volumes:
+      - "{{ appdata_path_opt }}/plex/config:/config"
+      - "{{ appdata_path_opt }}/plex/transcode:/transcode"
+      - "{{ appdata_path_opt }}/plex/tmp:/tmp"
+      - "/mnt/storage:/data"
+    include_global_env_vars: true
+    restart: unless-stopped
+  - service_name: nzbget
+    active: true
+    nginx_configs_rp_enabled: true
+    nginx_configs_rp_type: subfol
+    image: linuxserver/nzbget
+    container_name: nzbget
+    volumes:
+      - "{{ appdata_path_zfs }}/nzbget/config:/config"
+      - "{{ download_path }}:/downloads"
+    # ports:
+    #   - "6789:6789"
+    restart: unless-stopped
+    include_global_env_vars: true
+  - service_name: sonarr
+    active: true
+    nginx_configs_rp_enabled: true
+    nginx_configs_rp_type: subfol
+    image: linuxserver/sonarr:preview
+    container_name: sonarr
+    depends_on:
+      - nzbget
+    volumes:
+      - "{{ appdata_path_zfs }}/sonarr:/config"
+      - "{{ download_path }}/complete/tv:/downloads/complete/tv"
+      - /mnt/storage/tv:/tv
+    # ports:
+    #   - "8989:8989"
+    restart: unless-stopped
+    include_global_env_vars: true
+  - service_name: radarr
+    active: true
+    nginx_configs_rp_enabled: true
+    nginx_configs_rp_type: subfol
+    image: linuxserver/radarr
+    container_name: radarr
+    volumes:
+      - "{{ appdata_path_zfs }}/radarr:/config"
+      - /mnt/storage/movies:/movies
+      - "{{ download_path }}/complete/movies:/downloads/complete/movies"
+    # ports:
+    #   - "7878:7878"
+    restart: unless-stopped
+    include_global_env_vars: true
+  - service_name: lidarr
+    active: true
+    nginx_configs_rp_enabled: true
+    nginx_configs_rp_type: subfol
+    image: linuxserver/lidarr
+    container_name: lidarr
+    volumes:
+      - "{{ appdata_path_zfs }}/lidarr:/config"
+      - /mnt/storage/music/flac:/flac
+      - "{{ download_path }}/complete/music:/downloads/complete/music"
+    # ports:
+    #   - "8686:8686"
+    restart: unless-stopped
+    include_global_env_vars: true
+  - service_name: booksonic
+    active: true
+    nginx_configs_rp_enabled: true
+    nginx_configs_rp_type: subfol
+    image: linuxserver/booksonic
+    container_name: booksonic
+    mem_limit: 1024m
+    volumes:
+      - "{{ appdata_path_zfs }}/booksonic:/config"
+      - /mnt/storage/audiobooks:/books
+    # ports:
+    #   - "4040:4040"
+    include_global_env_vars: true
+    environment:
+      - CONTEXT_PATH=booksonic
+    restart: unless-stopped
+  - service_name: tautulli
+    active: true
+    nginx_configs_rp_enabled: true
+    nginx_configs_rp_type: subfol
+    image: linuxserver/tautulli
+    container_name: tautulli
+    mem_limit: 512m
+    depends_on:
+      - plex
+    include_global_env_vars: true
+    volumes:
+      - "{{ appdata_path_zfs }}/tautulli:/config"
+      - "{{ appdata_path_opt }}/plex/Library/Application\ Support/Plex\ Media\ Server/Logs:/logs:ro"
+    # ports:
+    #   - "8181:8181"
+    restart: unless-stopped
+  - service_name: ombi
+    active: true
+    nginx_configs_rp_enabled: true
+    nginx_configs_rp_type: subfol
+    image: linuxserver/ombi
+    container_name: ombi
+    depends_on:
+      - plex
+    mem_limit: 512m
+    include_global_env_vars: true
+    volumes:
+      - "{{ appdata_path_zfs }}/ombi:/config"
+    # ports:
+    #   - "3579:3579"
+    restart: unless-stopped
+  - service_name: hass
+    active: true
+    nginx_configs_rp_enabled: true
+    nginx_configs_rp_type: "subdom"
+    container_name: hass
+    image: homeassistant/home-assistant
+    network_mode: host
+    volumes:
+      - "{{ appdata_path_zfs }}/hass:/config"
+    # ports:
+    #   - "8123:8123"
+    include_global_env_vars: false
+    restart: unless-stopped
+  - service_name: dockermon
+    active: true
+    nginx_configs_rp_enabled: false
+    nginx_configs_rp_type: ""
+    container_name: dockermon
+    include_global_env_vars: false
+    image: philhawthorne/ha-dockermon
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "{{ appdata_path_zfs }}/config:/config"
+    ports:
+      - "8126:8126"
+    include_global_env_vars: false
+    restart: unless-stopped
+  - service_name: grafana
+    active: true
+    nginx_configs_rp_enabled: true
+    nginx_configs_rp_type: subfol
+    include_global_env_vars: false
+    image: grafana/grafana
+    container_name: grafana
+    environment:
+      - "GF_SERVER_ROOT_URL=https://al.ktz.me/grafana"
+      - "GF_SERVER_DOMAIN=https://al.ktz.me/"
+    ports:
+      - "3000:3000"
+    volumes:
+      - "{{ appdata_path_zfs }}/grafana/data:/var/lib/grafana"
+    restart: unless-stopped
+  - service_name: influxdb
+    active: true
+    nginx_configs_rp_enabled: false
+    nginx_configs_rp_type: ""
+    container_name: influx
+    image: influxdb
+    ports:
+      - "8086:8086"
+    volumes:
+      - "/mnt/tank/appdata/influxdb:/var/lib/influxdb"
+    include_global_env_vars: false
+    restart: unless-stopped
+  - service_name: smokeping
+    active: true
+    nginx_configs_rp_enabled: true
+    nginx_configs_rp_type: subfol
+    image: linuxserver/smokeping
+    container_name: smokeping
+    mem_limit: 128m
+    include_global_env_vars: true
+    volumes:
+      - "{{ appdata_path_zfs }}/smokeping/config:/config"
+      - "{{ appdata_path_zfs }}/smokeping/data:/config"
+    # ports:
+    #   - "8080:80"
+    restart: unless-stopped
+  - service_name: duplicati
+    active: true
+    nginx_configs_rp_enabled: false
+    nginx_configs_rp_type: ""
+    image: linuxserver/duplicati
+    hostname: cartman
+    container_name: duplicati
+    ports:
+      - "8200:8200"
+    volumes:
+      - "{{ appdata_path_zfs }}/duplicati:/config"
+      - /mnt/storage/backups:/backups
+      - /mnt/storage:/source/storage
+      - /opt:/source/opt
+    include_global_env_vars: true
+    restart: always
+
+## snapraid
+snapraid_config_excludes:
+  - "*.unrecoverable"
+  - "/tmp/"
+  - "/lost+found/"
+  - "downloads/"
+  - "appdata/"
+  - "*.!sync"
+  - ".AppleDouble"
+  - "._AppleDouble"
+  - ".DS_Store"
+  - "._.DS_Store"
+  - ".Thumbs.db"
+  - ".fseventsd"
+  - ".Spotlight-V100"
+  - ".TemporaryItems"
+  - ".Trashes"
+  - ".AppleDB"
