@@ -343,6 +343,23 @@ containers:
       - /opt:/source/opt
     include_global_env_vars: true
     restart: always
+  - service_name: nextcloud
+    active: true
+    nginx_configs_rp_enabled: true
+    nginx_configs_rp_type: "subdom"
+    image: nextcloud
+    container_name: nc
+    include_global_env_vars: false
+    volumes:
+      - "{{ appdata_path_zfs }}/nextcloud/html:/var/www/html"
+      - "{{ appdata_path_zfs }}/nextcloud/apps:/var/www/html/custom_apps"
+      - "{{ appdata_path_zfs }}/nextcloud/config:/var/www/html/config"
+      - "{{ appdata_path_zfs }}/nextcloud/theme:/var/www/html/themes"
+      - "{{ appdata_path_zfs }}/nextcloud/data:/data"
+    ports:
+      - "8081:80"
+    restart: unless-stopped
+
 
 ## snapraid
 snapraid_config_excludes:
