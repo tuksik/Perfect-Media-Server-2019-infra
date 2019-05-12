@@ -348,18 +348,31 @@ containers:
     nginx_configs_rp_enabled: true
     nginx_configs_rp_type: "subdom"
     image: nextcloud
+    depends_on:
+      - mysql
     container_name: nc
     include_global_env_vars: false
     volumes:
-      - "{{ appdata_path_zfs }}/nextcloud/html:/var/www/html"
-      - "{{ appdata_path_zfs }}/nextcloud/apps:/var/www/html/custom_apps"
-      - "{{ appdata_path_zfs }}/nextcloud/config:/var/www/html/config"
-      - "{{ appdata_path_zfs }}/nextcloud/theme:/var/www/html/themes"
-      - "{{ appdata_path_zfs }}/nextcloud/data:/data"
+      - "{{ appdata_path_zfs }}/nextcloud:/var/www/html"
     ports:
       - "8081:80"
     restart: unless-stopped
-
+  - service_name: mysql
+    active: true
+    nginx_configs_rp_enabled: false
+    nginx_configs_rp_type: ""
+    image: mariadb
+    container_name: mysql
+    include_global_env_vars: false
+    environment:
+      - "MYSQL_ROOT_PASSWORD={{ container_mysql_root_password }}"
+      - "MYSQL_PASSWORD={{ container_mysql_password }}"
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+    volumes:
+      - "{{ appdata_path_zfs }}/mysql:/var/lib/mysql"
+    command: "--transaction-isolation=READ-COMMITTED --binlog-format=ROW"
+    restart: unless-stopped
 
 ## snapraid
 snapraid_config_excludes:

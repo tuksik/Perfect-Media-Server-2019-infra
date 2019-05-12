@@ -7,6 +7,9 @@ mb:
 c:
 	ansible-playbook -b run.yaml --limit cartman --ask-become-pass --vault-password-file .vault-password
 
+ccomp:
+	ansible-playbook -b run.yaml --limit cartman --ask-become-pass --vault-password-file .vault-password --tags compose
+
 adguard:
 	ansible-playbook -b run.yaml --limit adguard --ask-become-pass --vault-password-file .vault-password
 
