@@ -388,6 +388,8 @@ containers:
       - "SSH_DOMAIN=git.ktz.me"
       - "APP_NAME=git.ktz.me"
       - "SSH_PORT=2222"
+      - "DISABLE_REGISTRATION=true"
+      - "REQUIRE_SIGNIN_VIEW=true"
     restart: unless-stopped
     volumes:
       - "{{ appdata_path_zfs }}/gitea:/data"
