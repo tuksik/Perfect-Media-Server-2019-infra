@@ -121,11 +121,12 @@ containers:
       - smokeping
       - booksonic
       - grafana
+      - gitea
     include_global_env_vars: true
     environment:
       - EMAIL=alexktz@gmail.com
       - URL=ktz.me
-      - SUBDOMAINS=al,dash,hass
+      - SUBDOMAINS=al,dash,hass,git
       - ONLY_SUBDOMAINS=true
       - EXTRA_DOMAINS=nc.ktz.cloud
       - DHLEVEL=4096
@@ -373,6 +374,26 @@ containers:
       - "{{ appdata_path_zfs }}/mysql:/var/lib/mysql"
     command: "--transaction-isolation=READ-COMMITTED --binlog-format=ROW"
     restart: unless-stopped
+  - service_name: gitea
+    active: true
+    nginx_configs_rp_enabled: true
+    nginx_configs_rp_type: "subdom"
+    image: gitea/gitea
+    container_name: gitea
+    include_global_env_vars: false
+    environment:
+      - "USER_UID={{ main_uid }}"
+      - "USER_GID={{ main_gid }}"
+      - "ROOT_URL=https://git.ktz.me"
+      - "SSH_DOMAIN=git.ktz.me"
+      - "APP_NAME=git.ktz.me"
+      - "SSH_PORT=2222"
+    restart: unless-stopped
+    volumes:
+      - "{{ appdata_path_zfs }}/gitea:/data"
+    ports:
+      - "3333:3000"
+      - "2222:2222"
 
 ## snapraid
 snapraid_config_excludes:
