@@ -48,25 +48,25 @@ package_list:
 
 # ferrarimarco.bash-aliases
 bash_aliases:
-  - { alias: "dtail", command: "docker logs -tf --tail='50' "}
-  - { alias: "dstop", command: "docker stop `docker ps -aq`"}
-  - { alias: "drm", command: "docker rm `docker ps -aq`"}
-  - { alias: "dcp", command: "docker-compose -f ~/docker-compose.yml "}
-  - { alias: "dprune", command: "docker image prune"}
-  - { alias: "dprunesys", command: "docker system prune --all"}
-  - { alias: "bashreload", command: "source ~/.bashrc && echo Bash config reloaded;"}
-  - { alias: "ctop", command: "docker run --name ctop  -it --rm -v /var/run/docker.sock:/var/run/docker.sock quay.io/vektorlab/ctop "}
-  - { alias: "sshclear", command: "rm ~/.ssh/multiplex/* -f && echo SSH connection cache cleared;"}
-  - { alias: "sshlist", command: "echo Currently open ssh connections && echo && l ~/.ssh/multiplex/"}
-  - { alias: "appdata", command: "cd /mnt/tank/appdata"}
-  - { alias: "zsnap", command: "zfs list -t snapshot"}
+  - { alias: "dtail", command: "docker logs -tf --tail='50' " }
+  - { alias: "dstop", command: "docker stop `docker ps -aq`" }
+  - { alias: "drm", command: "docker rm `docker ps -aq`" }
+  - { alias: "dcp", command: "docker-compose -f ~/docker-compose.yml " }
+  - { alias: "dprune", command: "docker image prune" }
+  - { alias: "dprunesys", command: "docker system prune --all" }
+  - { alias: "bashreload", command: "source ~/.bashrc && echo Bash config reloaded;" }
+  - { alias: "ctop", command: "docker run --name ctop  -it --rm -v /var/run/docker.sock:/var/run/docker.sock quay.io/vektorlab/ctop " }
+  - { alias: "sshclear", command: "rm ~/.ssh/multiplex/* -f && echo SSH connection cache cleared;" }
+  - { alias: "sshlist", command: "echo Currently open ssh connections && echo && l ~/.ssh/multiplex/" }
+  - { alias: "appdata", command: "cd /mnt/tank/appdata" }
+  - { alias: "zsnap", command: "zfs list -t snapshot" }
 
 # ktz-cartman
 cartman_main_storage_path: /mnt/storage
 
 extra_mountpoints:
   - { path: "{{ cartman_main_storage_path }}" }
-  - { path: /opt, diskbyid: /dev/disk/by-id/nvme-SAMSUNG_MZVKW512HMJP-000L7_S35BNX0K509438-part1, fs: ext4, opts: "defaults,discard"}
+  - { path: /opt, diskbyid: /dev/disk/by-id/nvme-SAMSUNG_MZVKW512HMJP-000L7_S35BNX0K509438-part1, fs: ext4, opts: "defaults,discard" }
 
 parity_disks:
   - { path: /mnt/parity1, diskbyid: /dev/disk/by-id/ata-WDC_WD100EMAZ-00WJTA0_16G0Z7RZ-part1, fs: xfs, opts: defaults }
